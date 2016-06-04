@@ -7,23 +7,26 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
-
 /**
  * Created by Evan on 6/3/16.
  */
 public class Frame extends JPanel implements MouseMotionListener {
-    public static final int ROWS = 20, COLS = 20;
+    public static final int ROWS = 25, COLS = 25;
 
 
 
-    enum State { WALLS, FUELS, CAR, DESTS, STARTED }
+    enum State {Wall, Fuel, Car, Dest, Start}
 
     private final JFrame frame = new JFrame("CSE 190");
-    private final JProgressBar fuel = new JProgressBar(0, 100);
-    private final Map map = new Map(ROWS, COLS);
-    private State state = State.WALLS;
-    private final JButton stateChanger = new JButton(state.toString());
+    private final JProgressBar fuel = new JProgressBar(0, 1000);
+    private final MultiMap map = new MultiMap(ROWS, COLS);
+    private State state = State.Wall;
 
+    private final JButton waller = new JButton("Add Walls");
+    private final JButton fueler = new JButton("Add Fuel");
+    private final JButton carer = new JButton("Set Car");
+    private final JButton dester = new JButton("Set Destination");
+    private final JButton starter = new JButton("Start");
 
     public Frame() {
         frame.setSize(1200, 900);
@@ -44,31 +47,57 @@ public class Frame extends JPanel implements MouseMotionListener {
                 final int col = (e.getPoint().x) / tWidth;
                 final int row = (e.getPoint().y) / tHeight;
 
-                if(state == State.FUELS)
+                if(state == State.Wall)
+                    map.setWall(row, col);
+                else if(state == State.Fuel)
                     map.setFuel(row, col);
-                else if(state == State.CAR)
+                else if(state == State.Car)
                     map.setCar(row, col);
-                else if(state == State.DESTS)
-                    map.addDestination(row, col);
+                else if(state == State.Dest)
+                    map.setDestination(row, col);
             }
         };
         this.addMouseMotionListener(this);
         this.addMouseListener(clickListener);
 
-        fuel.setValue(100);
+        fuel.setValue(fuel.getMaximum());
 
-        stateChanger.addActionListener(e -> nextState());
-        frame.add(stateChanger, BorderLayout.SOUTH);
 
-        new Timer(20, e -> repaint()).start();
+        final JPanel south = new JPanel(new FlowLayout());
+        south.add(waller);
+        south.add(fueler);
+        south.add(carer);
+        south.add(dester);
+        south.add(starter);
+
+
+        waller.addActionListener(e -> setState(State.Wall, fuel));
+        fueler.addActionListener(e -> setState(State.Fuel, fuel));
+        carer.addActionListener(e -> setState(State.Car, fuel));
+        dester.addActionListener(e -> setState(State.Dest, fuel));
+        starter.addActionListener(e -> setState(State.Start, fuel));
+
+
+
+
+        frame.add(south, BorderLayout.SOUTH);
+        new Timer(50, e -> repaint()).start();
     }
 
 
-    public void nextState(){
-        state = State.values()[(state.ordinal()+1) % State.values().length];
-        if(state == State.STARTED)
-            map.start();
-        stateChanger.setText(state.name());
+
+
+
+    public void setState(State s, JProgressBar progress){
+        state = s;
+
+        progress.setValue(progress.getMaximum());
+        new Thread( () -> {
+            if (state == State.Start)
+                map.start(progress);
+            else
+                 map.resetView();
+        }).start();
     }
 
 
@@ -77,6 +106,7 @@ public class Frame extends JPanel implements MouseMotionListener {
     @Override
     public void paintComponent(Graphics g){
         Graphics2D g2d = (Graphics2D) g;
+        super.paintComponent(g);
         map.draw(g2d);
     }
 
@@ -89,7 +119,7 @@ public class Frame extends JPanel implements MouseMotionListener {
         final int row = (e.getPoint().y) / tHeight;
 
 
-        if(state == State.WALLS)
+        if(state == State.Wall)
             map.setWall(row, col);
     }
 

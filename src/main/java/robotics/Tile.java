@@ -25,19 +25,28 @@ public class Tile implements Drawable {
     private boolean isWall;
     private boolean isFuel;
     private boolean isDest;
-    private String policy = "";
+    private Direction policy;
     private Optional<Tile> previous = Optional.empty();
     private double cost = Double.POSITIVE_INFINITY;
 
 
     public Tile(int r, int c){
-        this(r, c, ThreadLocalRandom.current().nextInt(Math.abs((r + c) % 6) <= 1 ? 150 : 0 , Math.abs((r + c) % 5) > 3 ? 255 : 151));
+        this(r, c, ThreadLocalRandom.current().nextInt(Math.abs((r + c) % 6) <= 1 ? 100 : 0 , Math.abs((r + c) % 5) > 3 ? 255 : 151));
     }
 
     public Tile(int r, int c, int h){
         row = r;
         col = c;
         height = h;
+    }
+
+    public Tile(Tile other){
+        row = other.row;
+        col = other.col;
+        height = other.height;
+        isWall = other.isWall;
+        isFuel = other.isFuel;
+        isDest = other.isDest;
     }
 
 
@@ -54,7 +63,8 @@ public class Tile implements Drawable {
 
 
         g.setColor(Color.BLACK);
-        g.drawString(policy, bounds.x+ bounds.width/2, bounds.y + bounds.height/2);
+        if(policy != null)
+            g.drawString(policy.symbol, bounds.x+ bounds.width/2, bounds.y + bounds.height/2);
         g.draw(bounds);
     }
 
@@ -80,13 +90,13 @@ public class Tile implements Drawable {
         previous = Optional.ofNullable(other);
         if(other != null){
             if(other.row > row)
-                policy = Direction.DOWN.symbol;
+                policy = Direction.DOWN;
             else if (other.row < row){
-                policy = Direction.UP.symbol;
+                policy = Direction.UP;
             } else if (other.col > col){
-                policy = Direction.RIGHT.symbol;
+                policy = Direction.RIGHT;
             } else if (other.col < col){
-                policy = Direction.LEFT.symbol;
+                policy = Direction.LEFT;
             }
         }
     }
@@ -145,12 +155,20 @@ public class Tile implements Drawable {
     }
 
 
-    public void update(Tile other, Map map){
+    public void update(Tile other, Map map, boolean isReversed){
         if(isWall()){
             return;
         }
 
-        final double proposedCost = other.cost + map.getCost(other, this);
+
+        final double proposedCost;
+
+        if(!isReversed)
+            proposedCost = other.cost + map.getCost(other, this);
+        else
+            proposedCost = other.cost + map.getCost(this, other);
+
+
         if(proposedCost < map.getCar().getFuel() && proposedCost < cost){
             cost = proposedCost;
             setPrevious(other);
@@ -165,6 +183,21 @@ public class Tile implements Drawable {
     public void reset(){
         cost = Double.POSITIVE_INFINITY;
         previous = Optional.empty();
-        policy = "";
+        policy = null;
+    }
+
+    public int getRow(){
+        return row;
+    }
+    public int getCol(){
+        return col;
+    }
+
+    public double getCost() {
+        return cost;
+    }
+
+    public boolean isFuel() {
+        return isFuel;
     }
 }

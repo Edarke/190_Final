@@ -45,4 +45,16 @@ public class Car implements Drawable {
     public double getFuel() {
         return fuel;
     }
+
+    public Tile getTile() {
+        return current;
+    }
+
+    public void setTile(Tile tile) {
+        this.current = tile;
+    }
+
+    public void setFuel(double fuel) {
+        this.fuel = fuel;
+    }
 }
