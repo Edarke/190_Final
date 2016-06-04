@@ -18,6 +18,7 @@
 *.ipr
 *.iws
 *.iml
+*.class
  
 ## Additional for IntelliJ
 out/
