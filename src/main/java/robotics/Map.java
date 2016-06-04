@@ -129,19 +129,5 @@ public class Map implements Drawable {
 
 
 
-    public double getCost(Tile from, Tile to){
-        if(!from.isNeighbor(to))
-            return Double.POSITIVE_INFINITY;
 
-        final boolean isUpHill = to.height - from.height > 5.0;
-        final boolean isDownHill = from.height - to.height > 5.0;
-
-        if(isUpHill){
-            return 1.0 + car.getWeight() * (to.height - from.height);  // idk, this is random
-        } else if (isDownHill){
-            return 1.0 ; // idk, this should have some non-constant cost right?
-        } else {
-            return 1.0;
-        }
-    }
 }

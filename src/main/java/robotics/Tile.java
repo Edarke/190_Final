@@ -167,9 +167,9 @@ public class Tile implements Drawable {
         final double proposedCost;
 
         if(!isReversed)
-            proposedCost = other.cost + map.getCost(other, this);
+            proposedCost = other.cost + map.getCar().getCost(other, this);
         else
-            proposedCost = other.cost + map.getCost(this, other);
+            proposedCost = other.cost + map.getCar().getCost(this, other);
 
 
         if(proposedCost < map.getCar().getFuel() && proposedCost < cost){

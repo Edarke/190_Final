@@ -30,7 +30,7 @@ public class MultiMap implements Drawable {
 
         foreach(t -> {
             foreach(t::isNeighbor, n -> {
-                t.height = (int)(t.height * .8  + .2 * n.height);
+                t.height = (int)(t.height * .9  + .1 * n.height);
             });
         });
     }
@@ -121,6 +121,8 @@ public class MultiMap implements Drawable {
 
         if(end.cost == Double.POSITIVE_INFINITY){
             JOptionPane.showMessageDialog(null, "There is no such path.");
+            view = sources.get(start.tile);
+            return null;
         }
 
 
@@ -155,7 +157,7 @@ public class MultiMap implements Drawable {
             }
 
             for(Tile t : path){
-                final double cost = getCost(car.getTile(), t);
+                final double cost = car.getCost(car.getTile(), t);
 
                 if(t.isFuel())
                     car.setFuel(1000);
@@ -171,28 +173,7 @@ public class MultiMap implements Drawable {
                 }
             }
         }
-
             return metaList;
-    }
-
-
-
-
-
-    public double getCost(Tile from, Tile to){
-        if(!from.isNeighbor(to))
-            return Double.POSITIVE_INFINITY;
-
-        final boolean isUpHill = to.height - from.height > 5.0;
-        final boolean isDownHill = from.height - to.height > 5.0;
-
-        if(isUpHill){
-            return 1.0 + car.getWeight() * (to.height - from.height);  // idk, this is random
-        } else if (isDownHill){
-            return .5 ; // idk, this should have some non-constant cost right?
-        } else {
-            return 1.0;
-        }
     }
 
 
