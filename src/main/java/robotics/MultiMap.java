@@ -54,6 +54,10 @@ public class MultiMap implements Drawable {
             car.setFuel(1000);
     }
 
+    public void addHeight(int deltaH, int row, int col) {
+        grid[row][col] = new Tile(grid[row][col], grid[row][col].height + deltaH);
+    }
+
 
     class MetaNode {
         public final Tile tile;

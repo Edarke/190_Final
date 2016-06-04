@@ -11,17 +11,19 @@ import java.awt.event.MouseMotionListener;
  * Created by Evan on 6/3/16.
  */
 public class Frame extends JPanel implements MouseMotionListener {
-    public static final int ROWS = 25, COLS = 25;
+    public static final int ROWS = 31, COLS = 31;
 
 
 
-    enum State {Wall, Fuel, Car, Dest, Start}
+    enum State {Inc, Dec, Wall, Fuel, Car, Dest, Start}
 
     private final JFrame frame = new JFrame("CSE 190");
     private final JProgressBar fuel = new JProgressBar(0, 1000);
     private final MultiMap map = new MultiMap(ROWS, COLS);
     private State state = State.Wall;
 
+    private final JButton hiller = new JButton("Add Hills");
+    private final JButton valler = new JButton("Add Valleys");
     private final JButton waller = new JButton("Add Walls");
     private final JButton fueler = new JButton("Add Fuel");
     private final JButton carer = new JButton("Set Car");
@@ -64,6 +66,8 @@ public class Frame extends JPanel implements MouseMotionListener {
 
 
         final JPanel south = new JPanel(new FlowLayout());
+        south.add(hiller);
+        south.add(valler);
         south.add(waller);
         south.add(fueler);
         south.add(carer);
@@ -76,7 +80,8 @@ public class Frame extends JPanel implements MouseMotionListener {
         carer.addActionListener(e -> setState(State.Car, fuel));
         dester.addActionListener(e -> setState(State.Dest, fuel));
         starter.addActionListener(e -> setState(State.Start, fuel));
-
+        hiller.addActionListener(e -> setState(State.Inc, fuel));
+        valler.addActionListener(e -> setState(State.Dec, fuel));
 
 
 
@@ -121,6 +126,10 @@ public class Frame extends JPanel implements MouseMotionListener {
 
         if(state == State.Wall)
             map.setWall(row, col);
+        else if(state == State.Inc)
+            map.addHeight(5, row, col);
+        else if(state == State.Dec)
+            map.addHeight(-5, row, col);
     }
 
     @Override

@@ -41,14 +41,17 @@ public class Tile implements Drawable {
     }
 
     public Tile(Tile other){
+        this(other, other.height);
+    }
+
+    public Tile(Tile other, int h) {
         row = other.row;
         col = other.col;
-        height = other.height;
+        height = Math.min(255, Math.max(h, 0));
         isWall = other.isWall;
         isFuel = other.isFuel;
         isDest = other.isDest;
     }
-
 
 
     @Override
