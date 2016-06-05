@@ -11,6 +11,7 @@ import java.util.function.Predicate;
  * Created by Evan on 6/3/16.
  */
 public class MultiMap implements Drawable {
+    public static final double INITIAL_FUEL = 1000;
     private final List<Tile> fuels = new LinkedList<>();
     private final Tile[][] grid;
 
@@ -93,13 +94,11 @@ public class MultiMap implements Drawable {
         final java.util.Map<Tile, Map> sources = new LinkedHashMap<>();
 
         final Map toDest = new Map(grid, dest, car, false);
-        final Map toStart = new Map(grid, car.getTile(), car);
+        final Map toStart = new Map(grid, car.getTile(), car, false);
         sources.put(dest, toDest);
         sources.put(car.getTile(), toStart);
 
-        fuels.parallelStream().forEach(t -> {
-            sources.put(t, new Map(grid, t, car));
-        });
+        fuels.parallelStream().forEach(t -> sources.put(t, new Map(grid, t, car, true)));
 
 
 
@@ -136,7 +135,7 @@ public class MultiMap implements Drawable {
 
 
 
-        while(!metaList.isEmpty()){
+        while(metaList.size() != 1){
             Map v = metaList.poll();
             view = v;
             System.out.println("Switching views");
@@ -150,28 +149,41 @@ public class MultiMap implements Drawable {
                 terminal = v.getTile(checkpoint.row, checkpoint.col);
             }
 
+            Tile term = terminal;
             final Deque<Tile> path = new LinkedList<>();
             while(terminal != null){
                 path.push(terminal);
                 terminal = terminal.getPrevious().orElse(null);
             }
 
+            System.out.println("Estimated Segment cost: " + term.getCost());
+
+
+
             for(Tile t : path){
-                final double cost = car.getCost(car.getTile(), t);
+                final double cost = car.getTile().equals(t) ? 0 : car.getCost(car.getTile(), t);
+
+                System.out.println("Total cost is " + t.getCost());
+                System.out.println("Delta cost is " + (t.getCost() - t.getPrevious().map(Tile::getCost).orElse(0.0) + "; " + cost));
+                if(t.equals(term)){
+                    System.out.println("Done with segment! (Estimation: " + term.getCost() + ")");
+                }
 
                 if(t.isFuel())
-                    car.setFuel(1000);
+                    car.setFuel(INITIAL_FUEL);
                 else
                     car.setFuel(car.getFuel() - cost);
+
                 SwingUtilities.invokeLater(() -> progress.setValue((int) car.getFuel()));
 
                 car.setTile(t);
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(300);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
+            System.out.println("Actual segment cost " + (INITIAL_FUEL - car.getFuel()));
         }
             return metaList;
     }
@@ -183,7 +195,7 @@ public class MultiMap implements Drawable {
     }
 
     public void setCar(int r, int c){
-        car = new Car(grid[r][c], 10, 1000);
+        car = new Car(grid[r][c], 10, INITIAL_FUEL);
     }
 
 

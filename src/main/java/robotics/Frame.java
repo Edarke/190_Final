@@ -6,6 +6,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
 
 /**
  * Created by Evan on 6/3/16.
@@ -18,7 +19,7 @@ public class Frame extends JPanel implements MouseMotionListener {
     enum State {Inc, Dec, Wall, Fuel, Car, Dest, Start}
 
     private final JFrame frame = new JFrame("CSE 190");
-    private final JProgressBar fuel = new JProgressBar(0, 1000);
+    private final JProgressBar fuel = new JProgressBar(0, (int) MultiMap.INITIAL_FUEL);
     private final MultiMap map = new MultiMap(ROWS, COLS);
     private State state = State.Wall;
 
@@ -86,7 +87,7 @@ public class Frame extends JPanel implements MouseMotionListener {
 
 
         frame.add(south, BorderLayout.SOUTH);
-        new Timer(50, e -> repaint()).start();
+        new Timer(20, e -> repaint()).start();
     }
 
 
@@ -96,7 +97,8 @@ public class Frame extends JPanel implements MouseMotionListener {
     public void setState(State s, JProgressBar progress){
         state = s;
 
-        progress.setValue(progress.getMaximum());
+
+        progress.setValue((int) MultiMap.INITIAL_FUEL);
         new Thread( () -> {
             if (state == State.Start)
                 map.start(progress);
@@ -104,6 +106,7 @@ public class Frame extends JPanel implements MouseMotionListener {
                  map.resetView();
         }).start();
     }
+
 
 
 

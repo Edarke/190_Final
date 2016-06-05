@@ -8,7 +8,7 @@ import java.io.IOException;
  * Created by Evan on 6/3/16.
  */
 public class Car implements Drawable {
-    private static Image truckImg;
+    public static Image truckImg;
     static{
         try {
             truckImg = ImageIO.read(Car.class.getResourceAsStream("/truck.png"));
@@ -65,11 +65,11 @@ public class Car implements Drawable {
         final boolean isDownHill = from.height - to.height > 5.0;
 
         if(isUpHill){
-            return 1.0 + getWeight() * (to.height - from.height);  // idk, this is random
+            return 1.0 + (to.height - from.height);  // idk, this is random
         } else if (isDownHill){
             return 1.0 ; // idk, this should have some non-constant cost right?
         } else {
-            return 1.0;
+            return 10.0;
         }
     }
 }

@@ -10,7 +10,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * Created by Evan on 6/3/16.
  */
 public class Tile implements Drawable {
-    private static Image gasImage;
+    public static Image gasImage;
     static{
         try {
             gasImage = ImageIO.read(Car.class.getResourceAsStream("/gas.png"));
@@ -108,10 +108,7 @@ public class Tile implements Drawable {
 
     @Override
     public String toString() {
-        return "Tile(" +
-                "col=" + col +
-                ", row=" + row +
-                ')';
+        return "Tile(" + row + ", " + col + ')';
     }
 
     @Override
@@ -158,7 +155,7 @@ public class Tile implements Drawable {
     }
 
 
-    public void update(Tile other, Map map, boolean isReversed){
+    public void update(Tile other, Map map, boolean isFromSource){
         if(isWall()){
             return;
         }
@@ -166,13 +163,13 @@ public class Tile implements Drawable {
 
         final double proposedCost;
 
-        if(!isReversed)
+        if(!isFromSource)
             proposedCost = other.cost + map.getCar().getCost(other, this);
         else
             proposedCost = other.cost + map.getCar().getCost(this, other);
 
 
-        if(proposedCost < map.getCar().getFuel() && proposedCost < cost){
+        if(proposedCost < cost && proposedCost < map.getCar().getFuel()){
             cost = proposedCost;
             setPrevious(other);
         }

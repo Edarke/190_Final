@@ -18,11 +18,11 @@ public class Map implements Drawable {
 
     private final Tile source;
 
-    private final boolean isReversed;
+    private final boolean isFromSource;
 
 
-    public Map(Tile[][] protoType, Tile src, Car car1, boolean reversed) {
-        isReversed = reversed;
+    public Map(Tile[][] protoType, Tile src, Car car1, boolean isSource) {
+        isFromSource = isSource;
         grid = new Tile[protoType.length][protoType[0].length];
         car = car1;
 
@@ -38,9 +38,6 @@ public class Map implements Drawable {
         bellmanFord();
     }
 
-    public Map(Tile[][] protoType, Tile src, Car car1){
-        this(protoType, src, car1, false);
-    }
 
 
 
@@ -66,7 +63,7 @@ public class Map implements Drawable {
         source.setCost(0);
 
         for(int i = 0; i < grid.length * grid[0].length; ++i)
-            foreach(t -> getNeighbors(t).forEach(n -> n.update(t, this, isReversed)));
+            foreach(t -> getNeighbors(t).forEach(n -> n.update(t, this, isFromSource)));
     }
 
 
