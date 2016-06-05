@@ -31,7 +31,20 @@ public class Tile implements Drawable {
 
 
     public Tile(int r, int c){
-        this(r, c, ThreadLocalRandom.current().nextInt(Math.abs((r + c) % 6) <= 1 ? 100 : 0 , Math.abs((r + c) % 5) > 3 ? 255 : 151));
+        this(r, c, rand(r,c));
+    }
+
+
+    private static int rand(int r, int c){
+        final double mod = Math.pow(Math.cos((corr(r,c))/16.0 * Math.PI), 2);
+        return (int)ThreadLocalRandom.current().nextDouble(mod * 100 , 150 + mod * 105);
+    }
+
+    private static double corr(int r, int c){
+        double r2  = Math.pow(r-Frame.ROWS/2, 2);
+        double c2  = Math.pow(c-Frame.COLS/2, 2);
+
+        return Math.sqrt(r2 + c2);
     }
 
     public Tile(int r, int c, int h){

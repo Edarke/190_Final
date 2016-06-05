@@ -28,9 +28,6 @@ public class Car implements Drawable {
         weight = initialWeight;
     }
 
-    public void start() {
-
-    }
 
     public void draw(Graphics2D g){
         g.setColor(new Color(0,255,0,125));
@@ -57,19 +54,16 @@ public class Car implements Drawable {
     public void setFuel(double fuel) {
         this.fuel = fuel;
     }
+
     public double getCost(Tile from, Tile to){
         if(!from.isNeighbor(to))
             return Double.POSITIVE_INFINITY;
 
-        final boolean isUpHill = to.height - from.height > 5.0;
-        final boolean isDownHill = from.height - to.height > 5.0;
+        final boolean isUpHill = to.height - from.height > 0;
 
         if(isUpHill){
-            return 1.0 + (to.height - from.height);  // idk, this is random
-        } else if (isDownHill){
-            return 1.0 ; // idk, this should have some non-constant cost right?
-        } else {
+            return 10.0 + 2*(to.height - from.height);  // idk, this is random
+        } else
             return 10.0;
-        }
     }
 }

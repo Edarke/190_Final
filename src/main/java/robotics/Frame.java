@@ -12,7 +12,7 @@ import java.awt.image.BufferedImage;
  * Created by Evan on 6/3/16.
  */
 public class Frame extends JPanel implements MouseMotionListener {
-    public static final int ROWS = 31, COLS = 31;
+    public static final int ROWS = 40, COLS = (ROWS * 16) / 9;
 
 
 
@@ -21,18 +21,13 @@ public class Frame extends JPanel implements MouseMotionListener {
     private final JFrame frame = new JFrame("CSE 190");
     private final JProgressBar fuel = new JProgressBar(0, (int) MultiMap.INITIAL_FUEL);
     private final MultiMap map = new MultiMap(ROWS, COLS);
-    private State state = State.Wall;
+    private State state = State.Car;
+    private final ButtonGroup group = new ButtonGroup();
 
-    private final JButton hiller = new JButton("Add Hills");
-    private final JButton valler = new JButton("Add Valleys");
-    private final JButton waller = new JButton("Add Walls");
-    private final JButton fueler = new JButton("Add Fuel");
-    private final JButton carer = new JButton("Set Car");
-    private final JButton dester = new JButton("Set Destination");
-    private final JButton starter = new JButton("Start");
+
 
     public Frame() {
-        frame.setSize(1200, 900);
+        frame.setSize(1290, 900);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         frame.setLayout(new BorderLayout());
@@ -67,6 +62,25 @@ public class Frame extends JPanel implements MouseMotionListener {
 
 
         final JPanel south = new JPanel(new FlowLayout());
+
+        final JRadioButton hiller = new JRadioButton("Add Hills");
+        final JRadioButton valler = new JRadioButton("Add Valleys");
+        final JRadioButton waller = new JRadioButton("Add Walls");
+        final JRadioButton fueler = new JRadioButton("Add Fuel");
+        final JRadioButton carer = new JRadioButton("Set Car");
+        final JRadioButton dester = new JRadioButton("Set Destination");
+        final JButton starter = new JButton("Start");
+
+        group.add(hiller);
+        group.add(valler);
+        group.add(waller);
+        group.add(fueler);
+        group.add(carer);
+        group.add(dester);
+
+        carer.setSelected(true);
+
+
         south.add(hiller);
         south.add(valler);
         south.add(waller);
@@ -87,6 +101,7 @@ public class Frame extends JPanel implements MouseMotionListener {
 
 
         frame.add(south, BorderLayout.SOUTH);
+        frame.invalidate();
         new Timer(20, e -> repaint()).start();
     }
 
@@ -94,9 +109,10 @@ public class Frame extends JPanel implements MouseMotionListener {
 
 
 
-    public void setState(State s, JProgressBar progress){
+    private void setState(State s, JProgressBar progress){
         state = s;
-
+        if(state == State.Start)
+            group.clearSelection();
 
         progress.setValue((int) MultiMap.INITIAL_FUEL);
         new Thread( () -> {
@@ -130,9 +146,9 @@ public class Frame extends JPanel implements MouseMotionListener {
         if(state == State.Wall)
             map.setWall(row, col);
         else if(state == State.Inc)
-            map.addHeight(5, row, col);
+            map.addHeight(10, row, col);
         else if(state == State.Dec)
-            map.addHeight(-5, row, col);
+            map.addHeight(-10, row, col);
     }
 
     @Override
