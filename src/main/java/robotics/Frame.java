@@ -1,6 +1,7 @@
 package robotics;
 
 import javax.swing.*;
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -26,7 +27,7 @@ public class Frame extends JPanel implements MouseMotionListener {
 
 
 
-    public Frame() {
+    public Frame() throws Exception {
         frame.setSize(1290, 900);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
@@ -59,6 +60,7 @@ public class Frame extends JPanel implements MouseMotionListener {
         this.addMouseListener(clickListener);
 
         fuel.setValue(fuel.getMaximum());
+        fuel.setStringPainted(true);
 
 
         final JPanel south = new JPanel(new FlowLayout());
@@ -70,6 +72,8 @@ public class Frame extends JPanel implements MouseMotionListener {
         final JRadioButton carer = new JRadioButton("Set Car");
         final JRadioButton dester = new JRadioButton("Set Destination");
         final JButton starter = new JButton("Start");
+
+
 
         group.add(hiller);
         group.add(valler);
@@ -116,7 +120,7 @@ public class Frame extends JPanel implements MouseMotionListener {
 
         frame.add(south, BorderLayout.SOUTH);
         frame.invalidate();
-        new Timer(20, e -> repaint()).start();
+        new Timer(25, e -> repaint()).start();
     }
 
 
@@ -170,8 +174,8 @@ public class Frame extends JPanel implements MouseMotionListener {
 
 
 
-    public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
-        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+    public static void main(String[] args) throws Exception {
+        UIManager.setLookAndFeel(new NimbusLookAndFeel());
         new Frame();
     }
 }

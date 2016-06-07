@@ -2,6 +2,9 @@ package robotics;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.ImageObserver;
+import java.awt.image.VolatileImage;
+import java.awt.image.renderable.RenderableImage;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
@@ -13,7 +16,7 @@ public class Tile implements Drawable {
     public static Image gasImage;
     static{
         try {
-            gasImage = ImageIO.read(Car.class.getResourceAsStream("/gas.png"));
+            gasImage = ImageIO.read(Car.class.getResourceAsStream("/gas.png")).getScaledInstance(64, 64, Image.SCALE_SMOOTH);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -69,9 +72,10 @@ public class Tile implements Drawable {
         final Rectangle bounds = getBounds(g);
         g.fill(bounds);
 
-        if(isFuel)
-            g.drawImage(gasImage, bounds.x, bounds.y, bounds.width, bounds.height, g.getColor(), null);
 
+        if(isFuel) {
+            g.drawImage(gasImage, bounds.x, bounds.y, bounds.width, bounds.height, g.getColor(), null);
+        }
 
         g.setColor(Color.BLACK);
         if(policy != null)
@@ -210,4 +214,6 @@ public class Tile implements Drawable {
     public int getHeight() {
         return height;
     }
+
+
 }

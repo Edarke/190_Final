@@ -11,7 +11,7 @@ public class Car implements Drawable {
     public static Image truckImg;
     static{
         try {
-            truckImg = ImageIO.read(Car.class.getResourceAsStream("/truck.png"));
+            truckImg = ImageIO.read(Car.class.getResourceAsStream("/truck.png")).getScaledInstance(128, 128, Image.SCALE_SMOOTH);
         } catch (IOException e) {
             e.printStackTrace();
         }
