@@ -34,7 +34,7 @@ public class Map implements Drawable {
             }
         }
 
-        source = getTile(src.getRow(), src.getCol());
+        source = getTile(src.row, src.col);
         bellmanFord();
     }
 
@@ -89,7 +89,7 @@ public class Map implements Drawable {
 
 
     public double getDistance(Tile t){
-        return getTile(t.getRow(), t.getCol()).getCost();
+        return getTile(t.row, t.col).getCost();
     }
 
 

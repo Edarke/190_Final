@@ -59,10 +59,10 @@ public class Car implements Drawable {
         if(!from.isNeighbor(to))
             return Double.POSITIVE_INFINITY;
 
-        final boolean isUpHill = to.height - from.height > 0;
+        final boolean isUpHill = to.getHeight() - from.getHeight() > 0;
 
         if(isUpHill){
-            return 10.0 + 2*(to.height - from.height);  // idk, this is random
+            return 10.0 + 2*(to.getHeight() - from.getHeight());  // idk, this is random
         } else
             return 10.0;
     }

@@ -21,7 +21,7 @@ public class Tile implements Drawable {
 
     public final int row;
     public final int col;
-    public int height;
+    private int height;
     private boolean isWall;
     private boolean isFuel;
     private boolean isDest;
@@ -30,37 +30,32 @@ public class Tile implements Drawable {
     private double cost = Double.POSITIVE_INFINITY;
 
 
-    public Tile(int r, int c){
-        this(r, c, rand(r,c));
+    public Tile(int p, int r, int c){
+        this(r, c, rand(p, r,c), null);
     }
 
 
-    private static int rand(int r, int c){
-        final double mod = Math.pow(Math.cos((corr(r,c))/16.0 * Math.PI), 2);
-        return (int)ThreadLocalRandom.current().nextDouble(mod * 100 , 150 + mod * 105);
+    private static int rand(int p, int r, int c){
+        final double mod = Math.pow(Math.cos((pNorm(p, r,c))/12.0 * Math.PI), 2);
+        return (int)ThreadLocalRandom.current().nextDouble(mod * 100 , 100 + mod * 155);
     }
 
-    private static double corr(int r, int c){
-        double r2  = Math.pow(r-Frame.ROWS/2, 2);
-        double c2  = Math.pow(c-Frame.COLS/2, 2);
+    private static double pNorm(int p, int r, int c){
+        double r2  = Math.pow(Math.abs(r-Frame.ROWS/2), p);
+        double c2  = Math.pow(Math.abs(c-Frame.COLS/2), p);
 
-        return Math.sqrt(r2 + c2);
+        return Math.pow(r2 + c2, 1.0/p);
     }
 
-    public Tile(int r, int c, int h){
+    private Tile(int r, int c, int h, Object privy){
         row = r;
         col = c;
-        height = h;
-    }
-
-    public Tile(Tile other){
-        this(other, other.height);
-    }
-
-    public Tile(Tile other, int h) {
-        row = other.row;
-        col = other.col;
         height = Math.min(255, Math.max(h, 0));
+    }
+
+
+    public Tile(Tile other) {
+        this(other.row, other.col, other.height, null);
         isWall = other.isWall;
         isFuel = other.isFuel;
         isDest = other.isDest;
@@ -199,12 +194,6 @@ public class Tile implements Drawable {
         policy = null;
     }
 
-    public int getRow(){
-        return row;
-    }
-    public int getCol(){
-        return col;
-    }
 
     public double getCost() {
         return cost;
@@ -212,5 +201,13 @@ public class Tile implements Drawable {
 
     public boolean isFuel() {
         return isFuel;
+    }
+
+    public void setHeight(int h) {
+        height = Math.min(255, Math.max(h, 0));
+    }
+
+    public int getHeight() {
+        return height;
     }
 }

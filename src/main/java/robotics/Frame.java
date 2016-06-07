@@ -6,23 +6,23 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.image.BufferedImage;
 
 /**
  * Created by Evan on 6/3/16.
  */
 public class Frame extends JPanel implements MouseMotionListener {
     public static final int ROWS = 40, COLS = (ROWS * 16) / 9;
+    public static final int NORM = 1;
 
-
-
+    enum Algorithm { Minimize_Fuel, Maximize_Reward}
     enum State {Inc, Dec, Wall, Fuel, Car, Dest, Start}
 
     private final JFrame frame = new JFrame("CSE 190");
     private final JProgressBar fuel = new JProgressBar(0, (int) MultiMap.INITIAL_FUEL);
-    private final MultiMap map = new MultiMap(ROWS, COLS);
+    private MultiMap map = new MultiMap(NORM, ROWS, COLS);
     private State state = State.Car;
     private final ButtonGroup group = new ButtonGroup();
+    final JComboBox<Algorithm> toggleButton = new JComboBox<>();
 
 
 
@@ -81,6 +81,13 @@ public class Frame extends JPanel implements MouseMotionListener {
         carer.setSelected(true);
 
 
+        final JSpinner norm = new JSpinner(new SpinnerNumberModel(NORM, 1, 10, 1));
+        norm.addChangeListener(e -> map = new MultiMap((int) norm.getValue(), ROWS, COLS) );
+        south.add(norm);
+
+
+
+
         south.add(hiller);
         south.add(valler);
         south.add(waller);
@@ -89,6 +96,13 @@ public class Frame extends JPanel implements MouseMotionListener {
         south.add(dester);
         south.add(starter);
 
+
+
+        toggleButton.addItem(Algorithm.Minimize_Fuel);
+        toggleButton.addItem(Algorithm.Maximize_Reward);
+
+
+        south.add(toggleButton);
 
         waller.addActionListener(e -> setState(State.Wall, fuel));
         fueler.addActionListener(e -> setState(State.Fuel, fuel));
@@ -117,7 +131,7 @@ public class Frame extends JPanel implements MouseMotionListener {
         progress.setValue((int) MultiMap.INITIAL_FUEL);
         new Thread( () -> {
             if (state == State.Start)
-                map.start(progress);
+                map.start(toggleButton.getSelectedIndex() == 0, progress);
             else
                  map.resetView();
         }).start();

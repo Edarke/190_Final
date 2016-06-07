@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Created by Evan on 6/3/16.
@@ -21,18 +22,16 @@ public class MultiMap implements Drawable {
     private Map view;
 
 
-    public MultiMap(int rows, int cols) {
+    public MultiMap(int pValue, int rows, int cols) {
         grid = new Tile[rows][cols];
         for(int r = 0; r < rows; ++r) {
             grid[r] = new Tile[cols];
             for(int c = 0; c < cols; ++c)
-                grid[r][c] = new Tile(r, c);
+                grid[r][c] = new Tile(pValue, r, c);
         }
 
         foreach(t -> {
-            foreach(t::isNeighbor, n -> {
-                t.height = (int)(t.height * .9  + .1 * n.height);
-            });
+            foreach(t::isNeighbor, n -> t.setHeight((int)(t.getHeight() * .9  + .12 * n.getHeight())));
         });
     }
 
@@ -56,7 +55,7 @@ public class MultiMap implements Drawable {
     }
 
     public void addHeight(int deltaH, int row, int col) {
-        grid[row][col] = new Tile(grid[row][col], grid[row][col].height + deltaH);
+        grid[row][col].setHeight(grid[row][col].getHeight() + deltaH);
     }
 
 
@@ -85,12 +84,11 @@ public class MultiMap implements Drawable {
                 previous = other;
             }
         }
-
     }
 
 
 
-    public Queue<Map> start(JProgressBar progress){
+    public void start(boolean shouldMinimizeGas, JProgressBar progress){
         final java.util.Map<Tile, Map> sources = new LinkedHashMap<>();
 
         final Map toDest = new Map(grid, dest, car, false);
@@ -109,19 +107,22 @@ public class MultiMap implements Drawable {
 
         final MetaNode start = new MetaNode(car.getTile(), sources);
         final MetaNode end = new MetaNode(dest, sources);
-        start.cost = 0;
         metas.add(start);
         metas.add(end);
 
 
-        for(int i = 0; i < metas.size(); ++i){
-            metas.forEach(m -> metas.forEach(m::update));
-        }
 
-        if(end.cost == Double.POSITIVE_INFINITY){
+        if(shouldMinimizeGas)
+            minimizeGas(start, metas);
+        else
+            maximizeRewad(start, end, metas);
+
+
+
+        if(end.previous == null){
             JOptionPane.showMessageDialog(null, "There is no such path.");
             view = sources.get(start.tile);
-            return null;
+            return;
         }
 
 
@@ -185,7 +186,29 @@ public class MultiMap implements Drawable {
             }
             System.out.println("Actual segment cost " + (INITIAL_FUEL - car.getFuel()));
         }
-            return metaList;
+    }
+
+
+    private void minimizeGas(MetaNode start, Collection<MetaNode> metas){
+        start.cost = 0;
+        for(int i = 0; i < metas.size(); ++i){
+            metas.forEach(m -> metas.forEach(m::update));
+        }
+    }
+
+
+
+    private void maximizeRewad(MetaNode start, MetaNode end, List<MetaNode> metas){
+        System.out.println("Maximizing final reward");
+
+        List<MetaNode> sorted = metas.stream().filter(n -> n != end).sorted((o1, o2) -> Double.compare(o1.getDistanceTo(end), o2.getDistanceTo(end))).collect(Collectors.toList());
+
+        start.cost = 0;
+        for(int i = 0; i < metas.size(); ++i){
+            sorted.forEach(m -> sorted.forEach(m::update));
+        }
+
+        end.previous = sorted.stream().filter(n -> n.previous != null || n == start).findFirst().get();
     }
 
 
