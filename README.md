@@ -7,6 +7,7 @@ This demo solves two variants of this problem:
 
 
 
-To visualize the algorithm, the map is color-coded (red squares represent high elevations, and blue squares represent low elevations). Traveling uphil costs a significant amount of fueld, whereas traveling on flat or downhill paths costs relatively little. 
+To visualize the algorithm, the map is color-coded (red squares represent high elevations, and blue squares represent low elevations). Traveling uphil costs a significant amount of fuel, whereas traveling on flat or downhill paths costs relatively little. 
+
 
 
